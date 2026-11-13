@@ -1,0 +1,208 @@
+[
+  {
+    "type": "file",
+    "name": "index.md",
+    "title": "Cue Central Documentation Hub",
+    "path": "index.md"
+  },
+  {
+    "type": "category",
+    "name": "getting-started",
+    "title": "Getting Started",
+    "path": "getting-started",
+    "children": [
+      {
+        "type": "file",
+        "name": "overview.md",
+        "title": "Platform Overview",
+        "path": "getting-started/overview.md"
+      },
+      {
+        "type": "file",
+        "name": "pwa-install.md",
+        "title": "Progressive Web App (PWA) Install",
+        "path": "getting-started/pwa-install.md"
+      },
+      {
+        "type": "file",
+        "name": "roles-and-permissions.md",
+        "title": "Roles & Access Permissions",
+        "path": "getting-started/roles-and-permissions.md"
+      },
+      {
+        "type": "file",
+        "name": "quickstart.md",
+        "title": "Volunteer & Musician Quickstart",
+        "path": "getting-started/quickstart.md"
+      }
+    ]
+  },
+  {
+    "type": "category",
+    "name": "cue-cards",
+    "title": "Cue Cards",
+    "path": "cue-cards",
+    "children": [
+      {
+        "type": "file",
+        "name": "interactive-viewer.md",
+        "title": "Interactive Cue Card Viewer",
+        "path": "cue-cards/interactive-viewer.md"
+      },
+      {
+        "type": "file",
+        "name": "rehearsals-and-setlists.md",
+        "title": "Rehearsals & Setlists",
+        "path": "cue-cards/rehearsals-and-setlists.md"
+      },
+      {
+        "type": "file",
+        "name": "service-item-types.md",
+        "title": "Service Item Types",
+        "path": "cue-cards/service-item-types.md"
+      },
+      {
+        "type": "file",
+        "name": "understanding-cue-cards.md",
+        "title": "Understanding Cue Cards",
+        "path": "cue-cards/understanding-cue-cards.md"
+      }
+    ]
+  },
+  {
+    "type": "category",
+    "name": "scheduling",
+    "title": "Scheduling",
+    "path": "scheduling",
+    "children": [
+      {
+        "type": "file",
+        "name": "automated-reminders.md",
+        "title": "Automated Push & Email Reminders",
+        "path": "scheduling/automated-reminders.md"
+      },
+      {
+        "type": "file",
+        "name": "blackout-dates-and-days-off.md",
+        "title": "Blackout Dates & Days Off",
+        "path": "scheduling/blackout-dates-and-days-off.md"
+      },
+      {
+        "type": "file",
+        "name": "master-schedule.md",
+        "title": "Master Ministry Schedule",
+        "path": "scheduling/master-schedule.md"
+      },
+      {
+        "type": "file",
+        "name": "my-assignments.md",
+        "title": "My Assignments",
+        "path": "scheduling/my-assignments.md"
+      }
+    ]
+  },
+  {
+    "type": "category",
+    "name": "sheet-music",
+    "title": "Sheet Music",
+    "path": "sheet-music",
+    "children": [
+      {
+        "type": "file",
+        "name": "hymns-and-preludes.md",
+        "title": "Congregational Hymns & Preludes",
+        "path": "sheet-music/hymns-and-preludes.md"
+      },
+      {
+        "type": "file",
+        "name": "pdf-viewer-and-audio.md",
+        "title": "In-App PDF Viewer & Audio",
+        "path": "sheet-music/pdf-viewer-and-audio.md"
+      },
+      {
+        "type": "file",
+        "name": "library-catalog.md",
+        "title": "Sheet Music Library & Catalog",
+        "path": "sheet-music/library-catalog.md"
+      }
+    ]
+  },
+  {
+    "type": "category",
+    "name": "service-production",
+    "title": "Service Production",
+    "path": "service-production",
+    "children": [
+      {
+        "type": "file",
+        "name": "cue-builder.md",
+        "title": "Cue Service Builder",
+        "path": "service-production/cue-builder.md"
+      },
+      {
+        "type": "file",
+        "name": "groups-and-rosters.md",
+        "title": "Groups, Rosters & Ensembles",
+        "path": "service-production/groups-and-rosters.md"
+      },
+      {
+        "type": "file",
+        "name": "print-and-export.md",
+        "title": "Print & Bulletin Exports",
+        "path": "service-production/print-and-export.md"
+      },
+      {
+        "type": "file",
+        "name": "special-music-requests.md",
+        "title": "Special Music Requests & Tokens",
+        "path": "service-production/special-music-requests.md"
+      }
+    ]
+  },
+  {
+    "type": "category",
+    "name": "developer",
+    "title": "Developer",
+    "path": "developer",
+    "children": [
+      {
+        "type": "file",
+        "name": "api-and-integrations.md",
+        "title": "APIs & Integration Services",
+        "path": "developer/api-and-integrations.md"
+      },
+      {
+        "type": "file",
+        "name": "architecture-and-stack.md",
+        "title": "Architecture & Technology Stack",
+        "path": "developer/architecture-and-stack.md"
+      },
+      {
+        "type": "file",
+        "name": "database-schema.md",
+        "title": "Database Schema & ER Diagrams",
+        "path": "developer/database-schema.md"
+      },
+      {
+        "type": "file",
+        "name": "deployment-and-gh-pages.md",
+        "title": "GitHub Pages Deployment",
+        "path": "developer/deployment-and-gh-pages.md"
+      }
+    ]
+  },
+  {
+    "type": "category",
+    "name": "troubleshooting",
+    "title": "Troubleshooting",
+    "path": "troubleshooting",
+    "children": [
+      {
+        "type": "file",
+        "name": "faq.md",
+        "title": "Frequently Asked Questions (FAQ)",
+        "path": "troubleshooting/faq.md"
+      }
+    ]
+  }
+]

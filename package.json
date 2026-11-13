@@ -1,0 +1,22 @@
+{
+  "name": "docs.cuecentral.org",
+  "version": "1.0.0",
+  "description": "Cue Central Dynamic Documentation Engine for GitHub Pages",
+  "scripts": {
+    "generate": "node generate-structure.js",
+    "build": "node generate-structure.js",
+    "dev": "npx -y serve . -p 8080",
+    "start": "npx -y serve . -p 8080"
+  },
+  "keywords": [
+    "cuecentral",
+    "cue",
+    "documentation",
+    "worship-production",
+    "spa",
+    "markdown",
+    "github-pages"
+  ],
+  "author": "Taligent Labs",
+  "license": "UNLICENSED"
+}
