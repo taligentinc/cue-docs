@@ -1,34 +1,22 @@
 # In-App PDF Viewer & Audio
 
-Cue Central includes an embedded digital **Sheet Music & Media Viewer** (`viewer.php`) tailored for music stands, tablet users, and vocalists practicing at home.
+Cue Central provides browser-based viewing for PDF sheet music and playback for uploaded audio files through `central_sheetmusic.php`, `viewer.php`, and `setlist_viewer.php`.
 
 ---
 
-## 📄 Digital Sheet Music Viewer
+## Volunteer Sheet Music Browser (`central_sheetmusic.php`)
 
-```mermaid
-graph TD
-    Viewer[Viewer Engine: viewer.php]
-    Viewer --> Render[Embedded High-DPI PDF Rendering]
-    Viewer --> AudioBar[Rehearsal Audio Player: Play / Pause / Seek]
-    Viewer --> Zoom[Zoom & Fullscreen Controls]
-    Viewer --> Theme[Anti-Glare Contrast Tuning]
-```
-
-### Key Capabilities:
-* **Pinch-to-Zoom & Dual Page Mode**: Smooth scaling on tablets and laptops. Dual-page view allows pianists and organists to view facing pages simultaneously.
-* **Low Latency Loading**: Sheet music files hosted securely on Cloudflare or AWS S3 are buffered for instant page turns.
-* **Anti-Glare Display**: Optimized background styling minimizes glare under sanctuary stage spotlights.
+Volunteers and choir members open **Sheet Music** (`central_sheetmusic.php`) to browse two searchable tabs:
+- **Specials**: Lists songs from `choir_library` with attached **PDF scores** and **uploaded rehearsal audio files**.
+- **Hymns**: Lists hymns from the church's configured hymnals with direct links to uploaded hymnal PDF scans.
 
 ---
 
-## 🎧 Rehearsal Audio Player
+## Standard Asset Viewer (`viewer.php`)
 
-Practice tracks accompany sheet music files whenever available:
+When tapping a link from `central_sheetmusic.php` or `central_cuecardviewer.php`, `viewer.php` renders the asset based on its `type` parameter:
+- **PDF Mode (`type=pdf`)**: Renders a vertical-scrolling **PDF.js** canvas with **Back**, **Share** (Web Share API), and **Download** buttons.
+- **Audio Mode (`type=audio`)**: Renders a standalone HTML5 `<audio controls>` player for listening to uploaded rehearsal tracks.
 
-* **In-Page Audio Control**: An integrated audio transport bar sits at the top or bottom of the sheet music view.
-* **Scrub & Repeat**: Quickly scrub through complex bridges, modulations, or vocal codas.
-* **Background Playback**: Audio continues playing as you navigate between stanzas or review rehearsal notes.
-
-> [!TIP]
-> **iOS Safari Tip**: Ensure your device is not in silent mode and that you tap the initial play button to allow web audio playback through iOS Safari.
+> [!NOTE]
+> `viewer.php` renders either a PDF or an audio player per link (not a combined audio bar inside the PDF view). For multi-song, hands-free performance on a music stand, use the [Full-Screen Setlist Viewer](../cue-cards/rehearsals-and-setlists.md) (`setlist_viewer.php`).

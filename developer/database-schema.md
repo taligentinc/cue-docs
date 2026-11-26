@@ -1,124 +1,33 @@
-# Database Schema & ER Diagrams
+# Database Schema
 
-Cue Central operates on an optimized SQLite relational database (`cue.sqlite` in production, `cue_dev.sqlite` in staging).
-
----
-
-## 🗄️ Entity Relationship Diagram
-
-```mermaid
-erDiagram
-    PEOPLE ||--o{ GROUP_MEMBERS : "belongs to"
-    GROUPS ||--o{ GROUP_MEMBERS : "contains"
-    PEOPLE ||--o{ DAYS_OFF : "submits"
-    
-    SERVICES ||--o{ SERVICE_ITEMS : "contains"
-    GROUPS ||--o{ SERVICE_ITEMS : "performs"
-    CHOIR_LIBRARY ||--o{ SERVICE_ITEMS : "sung in"
-    HYMNS ||--o{ SERVICE_ITEMS : "sung in"
-    
-    GROUPS ||--o{ SCHEDULED_SPECIALS : "assigned to"
-    CHOIR_LIBRARY ||--o{ SCHEDULED_SPECIALS : "selected song"
-
-    PRELUDE_SETS ||--o{ PRELUDE_ITEMS : "contains"
-    SETLISTS ||--o{ SETLIST_ITEMS : "contains"
-    
-    PEOPLE {
-        int id PK
-        string first_name
-        string last_name
-        int is_pianist
-        string email
-        string phone
-    }
-    
-    SERVICES {
-        int id PK
-        string service_date
-        string service_time
-        string service_type
-        string last_emailed
-        int hymns_logged
-        int is_published
-    }
-    
-    SERVICE_ITEMS {
-        int id PK
-        int service_id FK
-        string item_type
-        int sort_order
-        string label
-        string supplemental_info
-        string main_text
-        int hymn_id FK
-        int group_id FK
-        int prelude_set_id FK
-        int choir_song_id FK
-        string text_color_override
-        string bg_color_override
-        string border_color_override
-    }
-    
-    CHOIR_LIBRARY {
-        int id PK
-        string choir_id
-        string title
-        string arrangement
-        string status
-        string tags
-        string notes
-        string link_pdf
-        string link_audio
-        string link_youtube
-    }
-    
-    DAYS_OFF {
-        int id PK
-        int person_id FK
-        string date
-        string notes
-    }
-```
+Cue Central uses **PostgreSQL 16** (`init.php`) with **Row-Level Security (RLS)** enabled across all tenant-scoped tables. Every tenant table carries a `tenant_id` column isolated via `app.current_tenant_id`.
 
 ---
 
-## 📋 Table Definitions
+## Platform & Auth Tables
+- **`tenants`**: Organization ID, name, slug/subdomain, plan (`free`, `basic`, `pro`, `unlimited`), status (`active`, `pending_payment`, `suspended`), Stripe IDs.
+- **`global_users`**: Platform superadmin accounts.
+- **`sessions`**: PostgreSQL session store (`SessionDatabaseHandler.php`).
+- **`tenant_settings`**: Per-tenant key/value configuration (module toggles, OOS template, OIDC SSO settings, viewer font/notes preferences, timezone).
 
-### 1. `people`
-Stores volunteer accounts, contact info, and special pianist designations.
-* `id` (INTEGER PRIMARY KEY)
-* `first_name` (TEXT)
-* `last_name` (TEXT)
-* `is_pianist` (INTEGER 0/1)
-* `email` (TEXT UNIQUE)
-* `phone` (TEXT)
+---
 
-### 2. `services`
-Stores master worship service instances.
-* `id` (INTEGER PRIMARY KEY)
-* `service_date` (TEXT, `YYYY-MM-DD`)
-* `service_time` (TEXT, `HH:MM`)
-* `service_type` (TEXT, e.g. `Sunday Morning`, `Sunday Evening`, `Wednesday`)
-* `last_emailed` (TEXT, timestamp)
-* `hymns_logged` (INTEGER 0/1)
-* `is_published` (INTEGER 0/1)
+## Core Ministry & Scheduling Tables
+- **`people`**: Users, email, phone, password hash, `is_admin`, `permissions`, `is_pianist`.
+- **`groups`** & **`group_members`**: Vocal/instrumental groups and memberships.
+- **`email_lists`** & **`email_list_members`**: Custom email blast lists.
+- **`days_off`**: Volunteer blackout date ranges (`person_id`, `start_date`, `end_date`).
+- **`services`** & **`service_items`**: Cue Cards (`service_date`, `service_type`, `service_time`, `is_published`) and ordered items (`item_type`, `main_text`, `supplemental_info`, `hymn_id` `VARCHAR(50)`, `choir_song_id`, `group_id`, `prelude_set_id`, `sort_order`).
+- **`templates`** & **`template_items`**: Reusable service order templates.
+- **`type_colors`** & **`service_capacities`**: Custom print/builder colors and max specials per service type.
+- **`choir_schedule`**: Monthly schedule metadata (`pianist_*`, `offertory_*`, `opener_*`, `special_*`, `marker_*`, `published_*`).
+- **`scheduled_specials`** & **`special_request_tokens`**: Scheduled special music slots and 6-day request tokens.
 
-### 3. `service_items`
-Ordered items comprising each service's Cue Card.
-* `id` (INTEGER PRIMARY KEY)
-* `service_id` (INTEGER, FK -> `services.id`)
-* `item_type` (TEXT, e.g. `Choir Special`, `Congregational`)
-* `sort_order` (INTEGER)
-* `label` (TEXT)
-* `supplemental_info` (TEXT)
-* `main_text` (TEXT)
-* `hymn_id` (INTEGER, FK -> `hymns.id`)
-* `group_id` (INTEGER, FK -> `groups.id`)
-* `prelude_set_id` (INTEGER, FK -> `prelude_sets.id`)
-* `choir_song_id` (INTEGER, FK -> `choir_library.id`)
+---
 
-### 4. `days_off`
-Blackout dates submitted by volunteers.
-* `person_id` (INTEGER, FK -> `people.id`)
-* `date` (TEXT, `YYYY-MM-DD`)
-* `notes` (TEXT, `All Day`, `Morning Only`, `Evening Only`)
+## Sheet Music, Hymnals & Personal Setlists
+- **`hymns`**, **`tenant_hymnals`**, **`hymn_numbers`**: Multi-hymnal catalog (`ID`, `Name`, `Key`, `Total_Verses`, `Verses_to_Sing`, `OOS_Verses`, `OOS`, `Familiarity`, `Date_of_Most_Recent_Use`, `First_Line`, `Notes`).
+- **`prelude_sets`** & **`prelude_items`**: Curated prelude hymn sets.
+- **`choir_library`**, **`choir_tags`**, **`choir_shortcodes`**: Choir & special music catalog (`title`, `status`, `last_sung_date`, `notes`, `link_youtube`).
+- **`setlists`** & **`setlist_items`**: Per-user (`email`), per-service (`service_id`) personal PDF setlists.
+- **`user_preferences`** & **`push_subscriptions`**: Preferred hymnal/tag settings and Web Push endpoints.

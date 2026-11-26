@@ -1,41 +1,28 @@
-# Rehearsals & Setlists
+# Personal Setlists & PDF Viewer
 
-Cue Central provides dedicated setlist tools to plan mid-week rehearsals, Sunday morning sound checks, and choir practice sessions without disrupting published worship service flows.
-
----
-
-## 🎼 What is a Setlist?
-
-While a **Cue Card** represents the exact chronological service order for the congregation, a **Setlist** represents an ordered rehearsal sequence for musicians and vocalists.
-
-```mermaid
-flowchart LR
-    Setlist[Rehearsal Setlist: setlists] --> Item1[Warmup Hymn]
-    Setlist --> Item2[Sunday Morning Opener - Rehearsal]
-    Setlist --> Item3[Upcoming Easter / Christmas Anthem]
-    Setlist --> Item4[Special Music Run-Through]
-```
-
-### Database Tables:
-* `setlists`: Stores setlist headers (`id`, `name`, `date`, `notes`).
-* `setlist_items`: Ordered list of songs, hymns, and rehearsal notes linked to `setlists.id`.
+In **Cue Central**, pianists, organists, and choir members can build a **personal PDF setlist** for any published service and perform from a full-screen, hands-free PDF page-turner (`setlist_viewer.php`).
 
 ---
 
-## 📱 Interactive Setlist Viewer
+## How Personal Setlists Work (`setlists` & `api_setlist.php`)
 
-Musicians can launch the **Setlist Viewer** (`setlist_viewer.php`) on tablets and laptops:
+Unlike shared service orders, a **Setlist** in Cue Central is **per-user and per-service** (`setlists` table keyed by `tenant_id`, `email`, and `service_id`):
 
-1. View the target tempo (BPM), key signature, and estimated rehearsal duration for each piece.
-2. Tap any song to open the sheet music PDF in split-screen or full-screen mode.
-3. Access attached rehearsal audio tracks to verify phrasing, entrances, and dynamics.
-4. Review director rehearsal notes (e.g. *Measure 42: Tenors watch pitch on top F#; cut off on beat 3*).
+1. Open a published service in `central_cuecardviewer.php`.
+2. Set your **Preferred Hymnal** (e.g., `MAJ`, `SSH`) and **Preferred Part Tag** (e.g., `Piano`, `Full Score`, `Soprano`)—saved in `user_preferences`.
+3. Cue Central automatically matches the service's hymns and choir specials to the PDFs that fit your preferences and saves them to `setlist_items` via `api_setlist.php`.
+4. You can also **reorder items**, **exclude items**, or **upload private custom PDFs** directly into your setlist for that service.
 
 ---
 
-## 🔗 Repertoire Usage History
+## Full-Screen Setlist Viewer (`setlist_viewer.php`)
 
-When assembling setlists or scheduling service openers:
-* Cue Central tracks when each anthem or hymn was last sung.
-* Prevents unintentional repetition (e.g. singing the same opener within a 6-week window).
-* Allows directors to balance high-energy gospel anthems, classic sacred hymn arrangements, and contemporary worship pieces.
+Tapping **Play** opens `setlist_viewer.php`, which loads every PDF in your personal setlist into a continuous, full-screen **PDF.js** canvas:
+
+- **Page Turning**:
+  - Tap the **right side** of the screen or press **`ArrowRight`** to advance to the next page (and seamlessly into the next song's PDF).
+  - Tap the **left side** of the screen or press **`ArrowLeft`** to go back.
+  - Compatible with standard Bluetooth page-turner foot pedals that send `ArrowLeft` / `ArrowRight` keystrokes.
+- **Center Tap Controls**: Tap the center of the screen to toggle the top/bottom navigation bar, jump between songs, or exit.
+- **Song-Change Toast**: Briefly displays the new song title when advancing from one PDF to the next.
+- **Slide-Down Cue Card Drawer**: Pull or open the top drawer to inspect the full published Cue Card (`central_cuecardviewer.php?service_id=...&embedded=1`) without leaving the PDF viewer.

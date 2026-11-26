@@ -1,50 +1,25 @@
 # My Assignments
 
-The **My Assignments** page (`central_myschedule.php`) is the personal command center for every church musician, vocalist, accompanist, and production volunteer. It eliminates confusion by presenting an individualized schedule tailored specifically to you.
+The **My Assignments** view (`central_myschedule.php`) gives every volunteer, vocalist, pianist, and instrumentalist a personalized look at their upcoming 30-day ministry schedule.
 
 ---
 
-## 🔍 How Cue Central Identifies Your Assignments
+## How Assignments Are Aggregated
 
-When you load **My Assignments**, Cue Central executes a multi-table discovery query:
+`central_myschedule.php` looks up the signed-in user's `email` in the `people` table, retrieves all `groups` they belong to (`group_members`), and aggregates assignments over the next **30 days** from three sources (where either the monthly schedule or the service Cue Card is published):
 
-```mermaid
-graph TD
-    UserEmail[User Authentik Email] --> PersonQuery[Find Person ID in `people`]
-    PersonQuery --> GroupsQuery[Find Assigned Groups in `group_members`]
-    GroupsQuery --> SchedSpecials[Query `scheduled_specials` for Group]
-    GroupsQuery --> ChoirSched[Query `choir_schedule` for Roles]
-    SchedSpecials --> FilterPub[Filter: Services & Schedules must be Published]
-    ChoirSched --> FilterPub
-    FilterPub --> Window[Filter: Today to Next 30 Days]
-    Window --> PersonalList[Render 'My Assignments' List]
-```
-
-1. It matches your verified email against the `people` table.
-2. It resolves all group memberships in `group_members` (e.g. *Soprano Section*, *Sanctuary Orchestra*, *Praise Trio*, *AV Sound Booth*).
-3. It checks for scheduled special music in `scheduled_specials`.
-4. It cross-checks the master role matrix in `choir_schedule`.
-5. It filters out unapproved drafts — you only see assignments for services or monthly schedules that the directors have officially marked as **Published**.
+1. **Special Music (`scheduled_specials`)**: Assigned special music dates and any selected `choir_library` song.
+2. **Schedule Roles (`choir_schedule`)**: Monthly **Pianist**, **Offertory**, **Choir Opener**, and **Special** assignments.
+3. **Cue Card Items (`service_items`)**: Direct `Special Music` or `Offertory` items assigned to the volunteer's group in a published service.
 
 ---
 
-## 📅 What You See in Your Assignment Card
+## Conflict Highlighting
 
-For each scheduled date:
-
-* **Date & Service**: Formatted clearly (e.g. *Sunday, Dec 6, 2026 - Sunday Morning Worship*).
-* **Call Time**: Rehearsal sound-check time (typically 45–60 minutes prior to service).
-* **Assigned Role**:
-  * *Special Music Soloist / Ensemble*
-  * *Choir Opener*
-  * *Pianist / Keyboardist*
-  * *Offertory Instrumentalist*
-  * *AV Audio Engineer / Lighting Operator*
-* **Song Title & Repertoire Link**: If a specific song is scheduled, a direct link appears. Clicking it launches the PDF sheet music and rehearsal track.
+If an upcoming assignment falls within any date range you submitted in **Days Off**, `central_myschedule.php` highlights the assignment with a conflict badge so you can coordinate a swap with your music director.
 
 ---
 
-## 🖨️ Exporting & Syncing
+## Submitting Days Off
 
-* **Save to Calendar**: Add scheduled dates to your personal Apple Calendar or Google Calendar.
-* **Printable Assignment Sheet**: Print a monthly list to post on your refrigerator or music binder.
+Directly on `central_myschedule.php`, you can add or remove unavailable date ranges (`days_off` table) with a start date, end date, and optional label (such as `All Day`).

@@ -1,78 +1,40 @@
 # Volunteer & Musician Quickstart
 
-Get up and running with Cue Central in under 5 minutes. This guide walks you through logging in with Authentik SSO, reviewing your dashboard, accessing your upcoming assignments, and opening your first digital Cue Card.
+Welcome to **Cue Central**! This guide walks choir members, pianists, instrumentalists, and soloists through signing in and using the mobile-friendly portal.
 
 ---
 
-## 1. Sign In to Cue Central
+## Step 1: Find Your Church Workspace & Sign In
 
-1. Navigate to your church's Cue Central portal at [cue.corp.lbcgj.com](https://cue.corp.lbcgj.com).
-2. If prompted, sign in via **Authentik SSO** using your authorized church email address and password.
-3. If Multi-Factor Authentication (MFA) is enabled on your account, enter your TOTP security code.
-4. Once authenticated, the proxy forwards your identity headers (`X-Authentik-Email`, `X-Authentik-Username`) and opens your **Cue Central Dashboard**.
-
-> [!NOTE]
-> If you see an **Access Denied** screen, your account needs to be added to the `n-cue-central` permission group in Authentik by your ministry administrator. Contact your worship director to confirm your roster profile.
+1. Open your church's dedicated URL (for example, `https://yourchurch.app.cuecentral.org`) or visit `https://app.cuecentral.org` and enter your church's **Workspace ID** (`workspace.php`).
+2. Sign in on `login.php` using your email and password, or click **Sign in with SSO** if your church has enabled OpenID Connect (OIDC).
+3. Volunteers and musicians land in **Cue Central** (`central_index.php`, marked with the Music Note icon).
 
 ---
 
-## 2. Navigating the Volunteer Dashboard
+## Step 2: Check Your Dashboard (`central_index.php`)
 
-Your home dashboard provides an immediate high-level summary of upcoming worship services:
-
-```mermaid
-graph TD
-    Dashboard[Dashboard: central_index.php]
-    Dashboard --> Srv[Next 3 Published Services]
-    Dashboard --> Openers[Upcoming Openers & Specials]
-    Dashboard --> MyAssign[Your Next 30-Day Assignments]
-    Dashboard --> MusicQuick[Quick Access to Sheet Music]
-```
-
-* **Upcoming Services Card**: Displays the next 3 published services (date, service type, and start time).
-* **Openers & Specials**: Displays the selected choral openers and vocal specials for the immediate upcoming service.
-* **My Upcoming Assignments**: A personalized list of dates and times where your name or ensemble group is scheduled to minister.
-* **Direct Links**: Quick jump buttons to download sheet music, review the master calendar, or launch the live Cue Card.
+Your home screen displays three at-a-glance sections:
+- **Upcoming Cue Cards**: Up to the next 3 published services (`Sunday AM`, `Sunday PM`, etc.).
+- **Upcoming Specials & Openers**: The next scheduled Choir Special and Choir Opener (if enabled by your church).
+- **My Upcoming Assignments**: Your next 3 personal assignments across Special Music, Pianist, Offertory, and Choir Opener roles.
 
 ---
 
-## 3. Check Your Schedule & Call Times
+## Step 3: Manage Your Schedule & Days Off (`central_myschedule.php`)
 
-1. In the top navigation bar (or mobile menu), click **My Assignments** (`central_myschedule.php`).
-2. Review your personal assignment timeline:
-   * **Service Date & Time**: Sunday Morning (10:30 AM), Sunday Evening (6:00 PM), or Wednesday (7:00 PM).
-   * **Assigned Role**: Choir Section, Pianist, Offertory, Special Music, or Tech Crew.
-   * **Song Selection**: The specific title and arrangement scheduled.
-3. Click any song title with a document icon to instantly open the attached PDF in the **Sheet Music Viewer**.
+1. Open **My Assignments** from the navigation menu.
+2. Review all personal assignments over the next **30 days** (covering published schedules and published Cue Cards).
+3. If you will be out of town or unavailable, use the **Days Off** form to add a start date, end date, and optional label (such as `All Day`).
+   - Any assignment that overlaps a submitted day off is flagged with a conflict warning, and directors see the conflict when building services in `builder.php`.
 
 ---
 
-## 4. Open an Interactive Cue Card
+## Step 4: View Cue Cards & Build Your Personal Setlist
 
-1. Click **Cue Cards** in the top navigation bar (`central_cuecards.php`).
-2. Select an upcoming service card (e.g. *Sunday Morning Worship - 10:30 AM*).
-3. The interactive **Cue Card Viewer** opens:
-   * View the complete order of service from opening prelude to closing benediction.
-   * Track the current item being ministered on stage.
-   * Review notes regarding keys, modulating interludes, or microphone assignments.
-
----
-
-## 5. Submit Your Blackout Dates / Days Off
-
-If you know you will be out of town or unavailable for an upcoming service:
-
-1. Open **My Assignments** (`central_myschedule.php`).
-2. Scroll to the **Request Days Off / Availability** section.
-3. Select your **Start Date** and optional **End Date** (for multi-day vacations).
-4. Choose the time frame:
-   * **All Day** — Unavailable for all services on that date.
-   * **Morning Only** — Available for evening/midweek, but out for morning service.
-   * **Evening Only** — Available for morning, but out for evening service.
-5. Click **Submit Day Off** to record your unavailability in the master director database.
-
----
-
-## 6. Install the App on Your Phone or Tablet
-
-For the fastest Sunday morning experience, install Cue Central as a standalone Progressive Web App (PWA). Follow our simple [PWA Installation Guide](pwa-install.md) for step-by-step instructions for iPhone, iPad, Android, and desktop devices.
+1. Open **Cue Cards** (`central_cuecards.php`) and tap a published service to open `central_cuecardviewer.php`.
+2. Tap any linked **Hymn** or **Special** PDF to open it in `viewer.php`, or switch to **Setlist Setup** to:
+   - Choose your **Preferred Hymnal** and **Preferred Part Tag** (for example, `Piano` or `Soprano`).
+   - Auto-populate your personal PDF stack for the service (`api_setlist.php`).
+   - Upload private custom PDFs if needed.
+   - Tap **Play** to launch the full-screen `setlist_viewer.php` page-turner.

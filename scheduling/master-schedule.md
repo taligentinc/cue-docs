@@ -1,49 +1,22 @@
 # Master Ministry Schedule
 
-The **Master Schedule** (`central_schedule.php`) provides a complete, calendar-wide perspective of all worship services, musical presentations, and technical crew assignments across the entire church ministry.
+The **Master Schedule** connects **Cue Central Studio** (`schedule.php`)—where directors plan monthly rotations—with **Cue Central** (`central_schedule.php`)—where volunteers view published calendars.
 
 ---
 
-## 🗓️ Navigating Months & Schedules
+## Planning in Cue Central Studio (`schedule.php`)
 
-```mermaid
-flowchart LR
-    PrevBtn[← Previous Month] --> CurrentMonth[Current Month View: e.g. November 2026]
-    CurrentMonth --> NextBtn[Next Month →]
-    CurrentMonth --> SchedSelect[Schedule Selector: Main, Youth, Orchestra]
-```
-
-### Key Controls:
-* **Month Navigation**: Jump seamlessly between past archives and upcoming future months.
-* **Schedule Classification**: Switch between different ministry divisions:
-  * **Main**: Primary Sunday Morning, Sunday Evening, and Wednesday Midweek services.
-  * **Choir & Orchestra**: Specific choral rehearsal and sectional schedules.
-  * **Special Events**: Christmas cantatas, Easter productions, conferences, and revival services.
+Directors and schedule coordinators use `schedule.php` to manage a monthly calendar grid across:
+- **Schedule Roles** (`choir_schedule`): Assign **Pianist (`PIA`)**, **Offertory (`OFF`)**, **Choir Opener (`OPN`)**, and **Special (`SPC`)** per service.
+- **Scheduled Specials** (`scheduled_specials`): Assign groups to `Special Music` slots on specific dates and services, respecting `service_capacities` configured in `config.php`.
+- **Day Markers & Custom Services**: Add calendar markers (`marker_YYYY-MM-DD`) and custom service events (`add_custom_service`, `delete_custom_service`).
+- **Monthly Publishing**: Toggle `published_{schedule}_{YYYY-MM}` to control when a month's schedule becomes visible to volunteers.
+- **Schedule Blast Emails**: Send monthly schedule notification emails directly from `schedule.php` (`send_email`).
 
 ---
 
-## 📊 Published vs. Unpublished Status
+## Volunteer View in Cue Central (`central_schedule.php`)
 
-Directors manage schedule releases to prevent volunteers from planning around tentative drafts:
-
-* When a monthly schedule is finalized, directors set `published_<ScheduleName>_<YYYY-MM> = 1` in `choir_schedule`.
-* If a schedule is **Unpublished**, Cue Central displays an informational badge:
-  ```text
-  This schedule is currently being finalized by ministry directors and will be visible once published.
-  ```
-* Once published, the full grid of services, songs, and personnel unlocks instantly for all ministry members.
-
----
-
-## 🔍 Grid View Structure
-
-The schedule displays all Sundays and Wednesdays throughout the month:
-
-| Date | Service | Pianist | Opener Anthem | Special Music | Tech / AV |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Nov 1** | Sun Morning | Karen Miller | *Crown Him With Many Crowns* | Sanctuary Trio | John D. / Mike R. |
-| **Nov 1** | Sun Evening | David S. | *He Is Exalted* | Adult Choir | Sarah T. |
-| **Nov 4** | Wed Midweek | Karen Miller | *Hymn Medley* | Instrumental Ensemble | John D. |
-
-> [!TIP]
-> Hovering over or tapping any musical title reveals arrangement notes, key, and arranger details.
+Volunteers and choir members see a read-only, mobile-friendly monthly calendar for any month whose `published_{schedule}_{YYYY-MM}` flag is enabled:
+- Displays day markers, **Pianist (`PIA`)**, **Offertory (`OFF`)**, **Opener (`OPN`)**, and **Special (`SPC`)** assignments.
+- Lists scheduled Specials with clickable links to `central_sheetmusic.php` (or YouTube links when attached in `choir_library`).

@@ -1,70 +1,46 @@
 # Platform Overview
 
-**Cue Central** is a specialized worship production and ministry portal designed to eliminate the friction of coordinating live church services. It brings together music directors, pastors, audio/visual engineers, accompanists, choir members, and special music soloists into a synchronized real-time interface.
+**Cue Central** is a multi-tenant SaaS church music planning, scheduling, and sheet music platform hosted at `https://app.cuecentral.org` (with dedicated church subdomains such as `yourchurch.app.cuecentral.org`).
 
 ---
 
-## 🎯 Core Capabilities
+## Two Tailored Experiences
 
-Cue Central replaces fragmented emails, printed paper cue cards, and disparate spreadsheets with a unified ecosystem:
+Every church workspace provides two focused interfaces sharing the same live PostgreSQL database:
 
-```mermaid
-flowchart LR
-    A[Cue Production Platform] --> B[Master Schedule & Builder]
-    B --> C[Published Cue Cards]
-    B --> D[Volunteer Rosters & Groups]
-    C --> E[Cue Central PWA]
-    D --> E
-    E --> F[Musicians & Choir]
-    E --> G[Tech & AV Engineers]
-    E --> H[Pastors & Directors]
-```
+### 1. Cue Central Studio (Admins, Directors & Coordinators)
+- **Branding**: Identified by the **Hexagon Logo**.
+- **Purpose**: Service planning, monthly scheduling, hymnal & choir library management, permissions, and print exports.
+- **Core Pages**:
+  - `index.php` — Dashboard with Quick-Start service creation and 8 hymnody/choir metrics.
+  - `builder.php` — Drag-and-drop Cue Card & Order of Service builder.
+  - `schedule.php` — Monthly Master Schedule grid for Pianists, Offertories, Openers, Specials, and day markers.
+  - `hymns.php` — Multi-hymnal catalog, CSV import/export, and PDF scan uploads.
+  - `specials.php` — Choir & Specials library with S3-backed PDF and audio assets.
+  - `preludes.php` — Curated multi-hymn Prelude Sets.
+  - `groups.php` — People, vocal/instrumental groups, RBAC permissions, and email blast lists.
+  - `config.php` & `admin.php` — Service capacities, hymnal setup, print colors, OIDC SSO, and Stripe billing.
 
-### 1. Live Interactive Cue Cards
-Every Sunday morning, Sunday evening, and Wednesday midweek service features a dynamic **Cue Card**. Volunteers and operators can open the Cue Card on their phone, iPad, or laptop to view:
-* Exact service item sequence (Openers, Hymns, Announcements, Specials, Sermon, Invitation).
-* Planned duration, elapsed runtime, and remaining service countdowns.
-* Real-time service progression and status highlights.
-* Supplemental performance notes, keys, and accompanist tags.
-
-### 2. Volunteer Scheduling & "My Assignments"
-Team members no longer need to search through multi-page PDF rosters. Cue Central automatically identifies the logged-in user via **Authentik SSO** and presents their upcoming 30-day assignment list:
-* Specific service dates, times, and roles (e.g. *Choir Opener*, *Pianist*, *Offertory Special*).
-* Associated song titles and arrangement details.
-* Direct one-click access to the digital sheet music for their assigned songs.
-
-### 3. Digital Sheet Music & Repertoire Library
-Musicians can access choral arrangements, hymn scores, and special music pieces directly inside the app:
-* Complete searchable archive of sheet music PDFs.
-* Streaming rehearsal audio tracks and YouTube reference recordings.
-* Historical usage logs to ensure songs are rotated appropriately without repetitive overlap.
-
-### 4. Availability & Blackout Management
-Volunteers can submit **Days Off** and vacation dates directly through the portal:
-* Date range selections with granular options (Morning service, Evening service, or All Day).
-* Director alerts when building monthly schedules to prevent double-booking unavailable personnel.
-
-### 5. Progressive Web App (PWA) with Offline Access
-Cue Central functions as an installable app across all operating systems:
-* Add to Home Screen on iPhone, iPad, Android, macOS, and Windows.
-* Fast offline caching for rehearsal orders and cached sheet music.
-* Ambient dark and light modes tailored for dim sanctuary lighting or bright daytime practice.
+### 2. Cue Central (Volunteers, Choir & Musicians)
+- **Branding**: Identified by the **Music Note Logo**.
+- **Purpose**: Mobile-friendly Progressive Web App (PWA) for checking assignments, submitting days off, viewing published Cue Cards, and performing from personal PDF setlists.
+- **Core Pages**:
+  - `central_index.php` — Volunteer dashboard showing upcoming published Cue Cards, next Choir Special/Opener, and next 3 personal assignments.
+  - `central_myschedule.php` — 30-day personal assignment list with blackout date conflict warnings and Days Off submission.
+  - `central_cuecards.php` & `central_cuecardviewer.php` — Published Cue Cards with linked PDFs and personal setlist configuration.
+  - `setlist_viewer.php` — Full-screen PDF.js page-turner with tap zones, `ArrowLeft`/`ArrowRight` pedal support, and slide-down Cue Card drawer.
+  - `central_schedule.php` — Read-only monthly ministry schedule (when published).
+  - `central_sheetmusic.php` — Searchable catalog of Specials (PDFs & uploaded audio tracks) and Hymns (hymnal PDFs).
 
 ---
 
-## 🏛️ Ecosystem Architecture
+## Subscription Plans & Quotas
 
-| Component | Responsibility | Hostname / Service |
-| :--- | :--- | :--- |
-| **Cue Central** | Volunteer & musician portal, assignments, mobile cue viewer, sheet music | `cue.corp.lbcgj.com/central_*` |
-| **Cue Builder** | Director console for building service flow, drag-and-drop order, schedule publishing | `cue.corp.lbcgj.com/builder.php` |
-| **Authentik SSO** | Forward authentication proxy, identity management, MFA, group permissions | `outpost.goauthentik.io` |
-| **Documentation** | Static SPA documentation hub hosted on GitHub Pages | `taligentinc.github.io/cue-docs` |
+Workspaces are provisioned on one of four monthly plans (configured in `quotas.php` and `register.php`):
 
----
-
-## 🚀 Next Steps
-
-* Follow the [Volunteer & Musician Quickstart](quickstart.md) to log in and tour your dashboard.
-* Learn how to [Install the PWA on iOS & Android](pwa-install.md).
-* Review [Roles & Access Permissions](roles-and-permissions.md) for ministry teams.
+| Plan | Monthly Price | Cloud Storage | People Limit | Key Capabilities |
+| :--- | :--- | :--- | :--- | :--- |
+| **Free** | `$0/mo` | `1 GB` | `50` | Cue Card Builder, Master Schedule, Hymnals & Specials Catalog, Print Exports |
+| **Basic** | `$20/mo` | `20 GB` | `100` | Adds My Assignments, Web Push Reminders, Historical Hymnody Data, Large Cue Cards |
+| **Pro** | `$50/mo` | `100 GB` | `150` | Expanded S3 storage for larger choir PDF & audio libraries |
+| **Unlimited** | `$80/mo` | `Unlimited` | `Unlimited` | No storage or people limits; full OIDC SSO & role mapping |

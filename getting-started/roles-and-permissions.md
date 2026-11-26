@@ -1,101 +1,45 @@
 # Roles & Access Permissions
 
-Cue Central uses enterprise-grade **Forward Authentication** powered by [Authentik](https://goauthentik.io) integrated behind a reverse proxy (Traefik). This ensures robust identity verification, Single Sign-On (SSO), and role-based access control (RBAC).
+Cue Central uses **native session-based authentication** (`auth.php` + PostgreSQL `sessions` table) paired with **Role-Based Access Control (RBAC)** defined in `rbac.php` and optional per-tenant **OIDC Single Sign-On**.
 
 ---
 
-## 🔐 How Authentication Works
+## Authentication Methods
 
-When a request arrives at `cue.corp.lbcgj.com`:
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Volunteer / Director
-    participant Proxy as Traefik Outpost
-    participant Auth as Authentik SSO
-    participant App as Cue Central (PHP)
-    participant DB as SQLite Database
-
-    User->>Proxy: Access https://cue.corp.lbcgj.com/central_index
-    Proxy->>Auth: Verify Session & Cookies
-    alt Not Logged In
-        Auth-->>User: Redirect to Authentik Login Screen
-        User->>Auth: Enter Email + Password + MFA
-        Auth-->>Proxy: Session Authenticated
-    end
-    Proxy->>App: Forward Request + Headers (X-Authentik-Email, X-Authentik-Groups)
-    App->>DB: Query `people` Table matching X-Authentik-Email
-    alt User Found in DB or in `n-cue-central` Group
-        App-->>User: Render Authorized Portal
-    else Not in Group & Not in DB
-        App-->>User: 403 Forbidden / unauthorized.php
-    end
-```
-
-### Forwarded Security Headers:
-* `HTTP_X_AUTHENTIK_EMAIL`: The authenticated email address of the user (e.g. `sarah.smith@lbcgj.com`).
-* `HTTP_X_AUTHENTIK_USERNAME`: The system username in Authentik.
-* `HTTP_X_AUTHENTIK_GROUPS`: Pipe-delimited list of Authentik security groups (e.g. `n-cue-central|worship-directors`).
-* `HTTP_X_AUTHENTIK_NAME`: Full display name resolved from Authentik profile or cached locally in `user_name_cache`.
+1. **Workspace Lookup (`workspace.php`)**: Users visiting `app.cuecentral.org` enter their church Workspace ID (subdomain slug) or navigate directly to `yourchurch.app.cuecentral.org`.
+2. **Native Email & Password (`login.php`)**: Authenticates against the tenant's `people` table using PHP password hashing.
+3. **Per-Tenant OIDC SSO (`oidc_login.php`, `oidc_callback.php`)**: Configured in **Admin → Single Sign-On** (`admin.php`) using Authorization Code + PKCE (`S256`). OIDC group claims can automatically map users to Cue Central permissions via `cue_oidc_decode_group_mappings()`.
 
 ---
 
-## 👥 Permission Tiers
+## Platform Admin & 14 Canonical Permissions
 
-| Tier | Role | Authentik Group | Capabilities |
-| :--- | :--- | :--- | :--- |
-| **Tier 1** | **Volunteer / Musician** | `n-cue-central` | View personalized assignments, view published Cue Cards, access sheet music library, submit days off & blackout ranges. |
-| **Tier 2** | **Music Director / Worship Leader** | `cue-directors` | Full Cue Builder access (`builder.php`), drag-and-drop service ordering, assign specials/openers, publish monthly schedules and cue cards. |
-| **Tier 3** | **Production & Tech Crew** | `cue-production` | Live fullscreen cue card runner, AV timing tracking, audio/visual item triggers, setlist exports. |
-| **Tier 4** | **Super Administrator** | `cue-superadmins` | Database migrations, table initialization (`init.php`, `install.php`), group creation, S3 asset synchronization, and Authentik outpost configuration. |
+Each user in `people` has an `is_admin` flag (full Studio & Admin access) and a `permissions` list drawn from 14 canonical keys in `rbac.php`:
 
----
-
-## ⚙️ Authorization Enforcement Code
-
-Every page in Cue Central verifies authorization at the very top of script execution:
-
-```php
-<?php
-$currentPage = "central_index";
-require "db.php";
-
-$authEmail = $_SERVER["HTTP_X_AUTHENTIK_EMAIL"] ?? "";
-$authGroupsRaw = $_SERVER["HTTP_X_AUTHENTIK_GROUPS"] ?? "";
-$authGroups = array_map("trim", explode("|", $authGroupsRaw));
-
-$isPerson = false;
-$personId = null;
-
-// Check 1: Authentik Group Membership
-if (in_array("n-cue-central", $authGroups)) {
-    $isPerson = true;
-}
-
-// Check 2: Registered People Record in Database
-if ($authEmail) {
-    $stmt = $db->prepare("SELECT id FROM people WHERE email = ?");
-    $stmt->execute([$authEmail]);
-    $personId = $stmt->fetchColumn();
-    if ($personId) {
-        $isPerson = true;
-    }
-}
-
-// If neither condition is met, abort immediately
-if (!$isPerson) {
-    $unauthType = "smc";
-    require "unauthorized.php";
-    exit;
-}
-?>
-```
+| Permission Key | Scope |
+| :--- | :--- |
+| `n-cue` | Access Cue Central Studio |
+| `n-cue-central` | Access Cue Central (Volunteer Portal) |
+| `n-cue-cuecards` | Build & edit Cue Cards in `builder.php` |
+| `n-cue-savetemplates` | Save & delete service templates in `builder.php` |
+| `n-cue-schedule` | Edit Master Monthly Schedule (`schedule.php`) |
+| `n-cue-pianists` | Assign pianists on the schedule |
+| `n-cue-offertories` | Assign offertories on the schedule |
+| `n-cue-specials` | Manage Choir & Specials library (`specials.php`) |
+| `n-cue-hymnsedit` | Manage Hymnals & Hymn Catalog (`hymns.php`) |
+| `n-cue-preludes` | Manage Prelude Sets (`preludes.php`) |
+| `n-cue-groups` | Manage People & Groups (`groups.php`) |
+| `n-cue-emaillists` | Manage Email Blast Lists (`groups.php`) |
+| `n-cue-emails` | Send Order of Service & Schedule blast emails |
+| `n-cue-config` | Configure Capacities, Hymnals, Tags & Colors (`config.php`) |
 
 ---
 
-## 🛡️ Best Practices for Administrators
+## Built-In Role Presets
 
-1. **Keep Emails Consistent**: Ensure the volunteer's email address in the `people` table matches their primary login in Authentik.
-2. **Assign `n-cue-central` Group**: Place all choir members, vocalists, accompanists, and AV volunteers in the `n-cue-central` group.
-3. **Revocation**: Removing a user from the Authentik group or clearing their record from `people` immediately revokes their portal access across all active sessions.
+When editing a person's access in `groups.php`, administrators can apply one of four built-in presets:
+
+- **Service Director**: Full production & scheduling permissions (`n-cue`, `n-cue-central`, `n-cue-cuecards`, `n-cue-savetemplates`, `n-cue-schedule`, `n-cue-specials`, `n-cue-pianists`, `n-cue-offertories`, `n-cue-hymnsedit`, `n-cue-preludes`, `n-cue-groups`, `n-cue-emaillists`, `n-cue-emails`, `n-cue-config`).
+- **Schedule Coordinator**: Scheduling & communication (`n-cue`, `n-cue-central`, `n-cue-schedule`, `n-cue-pianists`, `n-cue-offertories`, `n-cue-groups`, `n-cue-emaillists`, `n-cue-emails`).
+- **Music Librarian**: Catalog & sheet music management (`n-cue`, `n-cue-central`, `n-cue-specials`, `n-cue-hymnsedit`, `n-cue-preludes`).
+- **Volunteer / Crew**: Volunteer portal access only (`n-cue-central`).
